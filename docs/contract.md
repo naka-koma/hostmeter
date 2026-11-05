@@ -27,7 +27,7 @@ The latest sample.
       "temperature_c": 40,
       "power_watts": 37.4,
       "processes": [
-        { "pid": 23728, "name": "python.exe", "dedicated_mib": 2836 }
+        { "pid": 23728, "name": "python.exe", "memory_mib": 2836 }
       ]
     }
   ]
@@ -39,10 +39,13 @@ The latest sample.
   and the answer is still `200`: the service is up, the hardware is not readable.
 - `utilization_percent`, `temperature_c`, `power_watts` may be `null` when the driver does not report them.
 - `memory.used_mib` is what the driver reports for the whole adapter (every program, the desktop included).
-- `processes` is the per-process video memory from the Windows counters, largest first, at most 20 entries,
-  entries under 16 MiB left out. **It does not add up to `memory.used_mib`**: the counters follow what a
-  process has allocated, not what is resident, and a process may be listed that the driver does not count.
-  Use it to see *who*, not to check the sum.
+- `processes` is the video memory each process holds in the adapter's own memory (the Windows counter
+  `GPU Process Memory` / `Local Usage`), largest first, at most 20 entries, entries under 16 MiB left out.
+  **It does not add up to `memory.used_mib`**: on the machine this was written for, the processes came to about
+  80% of it (4.6 of 5.6 GB); the rest is memory the driver and the system hold for themselves. Use it to see
+  *who*, not to check the sum. (The counter `Dedicated Usage` was tried and rejected: it counts far more than the
+  adapter has.) In version 1 the list belongs to the first adapter; a machine with more than one adapter gets the
+  list of the adapter whose processes hold the most.
 - A process that ended between the two readings may have no name (`""`).
 
 ## `GET /v1/gpu/history?seconds=N`
@@ -60,7 +63,7 @@ The samples of the last `N` seconds, oldest first. `N` defaults to the whole ret
       "t": "2026-11-06T06:12:07Z",
       "adapters": [
         { "index": 0, "utilization_percent": 3, "memory_used_mib": 5560, "temperature_c": 40, "power_watts": 37.4,
-          "processes": [ { "pid": 23728, "name": "python.exe", "dedicated_mib": 2836 } ] }
+          "processes": [ { "pid": 23728, "name": "python.exe", "memory_mib": 2836 } ] }
       ]
     }
   ]

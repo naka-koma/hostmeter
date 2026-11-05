@@ -1,0 +1,17 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# GitHub-hosted runners only: this is a public repository, and a self-hosted runner must never run code from one.
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test
+        run: cargo test --locked
+      - name: Build
+        run: cargo build --release --locked

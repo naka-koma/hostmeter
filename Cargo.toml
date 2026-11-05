@@ -1,0 +1,25 @@
+[package]
+name = "hostmeter"
+version = "0.1.0"
+edition = "2021"
+description = "A small resident service that samples host load (GPU first) and serves it as JSON with a short history."
+license = "MIT"
+repository = "https://github.com/naka-koma/hostmeter"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tiny_http = "0.12"
+time = { version = "0.3", features = ["formatting"] }
+
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.62", features = [
+    "Win32_Foundation",
+    "Win32_System_Performance",
+    "Win32_System_Diagnostics_ToolHelp",
+] }
+
+[profile.release]
+opt-level = "s"
+lto = true
+strip = true
