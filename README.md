@@ -4,7 +4,7 @@ A small resident service that samples the load of a machine and serves it as JSO
 so that any other program (a dashboard, a web app running in a container) can draw a live graph without
 knowing how to read the hardware.
 
-**Status: design draft.** The first version measures the **GPU** (NVIDIA, on Windows). CPU, memory and disk
+**Status: first working version (0.1.0).** It measures the **GPU** (NVIDIA, on Windows). CPU, memory and disk
 are possible later additions under the same contract; nothing else is promised.
 
 ## Why
@@ -18,7 +18,7 @@ both sources, keeps the last few minutes in memory and answers over HTTP. A clie
 | Source | Gives |
 |---|---|
 | `nvidia-smi` (the driver's own tool) | GPU utilisation (%), memory used / total, temperature, power draw |
-| Windows performance counters `GPU Process Memory` | Video memory per process (dedicated usage), with the process name |
+| Windows performance counters `GPU Process Memory` (`Local Usage`) | Video memory per process, with the process name |
 
 It never needs administrator rights, never changes anything on the machine and never writes to disk.
 
@@ -47,7 +47,11 @@ wrapper, or a terminal.
 
 ## Build
 
-Written in Rust. `cargo build --release` produces one executable with no runtime to install.
+Written in Rust. `cargo build --release` produces one executable (about 500 KB) with no runtime to install;
+`cargo test` runs the tests (they need no GPU).
+
+On the machine it was written for (RTX 5070 Ti), a reading every 2 seconds cost about 0.01 s of CPU per second
+and 12 MB of memory.
 
 ## Licence
 
